@@ -1,0 +1,31 @@
+name : build and deploy
+
+on:
+  pash:
+    branches:
+      - master
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/chechout@v2
+
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path:~/.npm
+        key:${{ runner.os}}-node-${{hashFiles('../package-lock.json')}}
+        restore-keys:
+          ${{runner.os}}-node-
+
+      run : npn ci
+      run : npm run build
+
+      GitHub pages
+      -name: Deploy
+       uses: peaceiris/actions-gh-pages@v2
+       env:
+        PERSONAL_TOKEN: ${{secrets.ACCESS_TOKEN}}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./public
